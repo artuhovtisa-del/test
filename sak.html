@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест — Техника безопасности на рабочем месте</title>
+    <style>
+        /* ===== СБРОС И БАЗОВЫЕ СТИЛИ ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            color: #e0e0e0;
+        }
+
+        /* ===== КОНТЕЙНЕР ===== */
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            max-width: 750px;
+            width: 100%;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ===== ЗАГОЛОВОК ===== */
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .quiz-header h1 {
+            font-size: 28px;
+            color: #00d4ff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .quiz-header p {
+            font-size: 15px;
+            color: #a0a0b8;
+        }
+
+        /* ===== ПРОГРЕСС-БАР ===== */
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 14px;
+            color: #a0a0b8;
+            margin-bottom: 10px;
+        }
+
+        /* ===== ВОПРОС ===== */
+        .question-block {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .question-block.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .question-title span {
+            color: #00d4ff;
+        }
+
+        /* ===== ВАРИАНТЫ ОТВЕТОВ ===== */
+        .options-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-item {
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            color: #d0d0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-item:hover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .option-item.selected {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.15);
+            color: #ffffff;
+        }
+
+        .option-item.correct {
+            border-color: #00e676;
+            background: rgba(0, 230, 118, 0.15);
+            color: #00e676;
+        }
+
+        .option-item.wrong {
+            border-color: #ff5252;
+            background: rgba(255, 82, 82, 0.15);
+            color: #ff5252;
+        }
+
+        .option-item.disabled {
+            pointer-events: none;
+        }
+
+        /* ===== КНОПКИ ===== */
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 14px 35px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            color: #fff;
+            margin-left: auto;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.35);
+        }
+
+        .btn-next:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #ff5252, #ff1744);
+            color: #fff;
+            margin: 0 auto;
+        }
+
+        .btn-restart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 82, 82, 0.35);
+        }
+
+        /* ===== РЕЗУЛЬТАТ ===== */
+        .result-block {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-block.active {
+            display: block;
+        }
+
+        .result-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-score {
+            font-size: 48px;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .result-message {
+            font-size: 20px;
+            color: #a0a0b8;
+            margin-bottom: 15px;
+        }
+
+        .result-details {
+            font-size: 15px;
+            color: #707090;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        /* ===== ПОЯСНЕНИЕ ===== */
+        .explanation {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background: rgba(0, 212, 255, 0.07);
+            border-left: 4px solid #00d4ff;
+            border-radius: 0 10px 10px 0;
+            font-size: 14px;
+            color: #c0c0d8;
+            line-height: 1.6;
+        }
+
+        .explanation.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .explanation strong {
+            color: #00d4ff;
+        }
+
+        /* ===== АДАПТИВНОСТЬ ===== */
+        @media (max-width: 600px) {
+            .quiz-container {
+                padding: 25px 20px;
+            }
+
+            .quiz-header h1 {
+                font-size: 22px;
+            }
+
+            .question-title {
+                font-size: 17px;
+            }
+
+            .option-item {
+                font-size: 14px;
+                padding: 13px 16px;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+
+            .result-score {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+
+    <!-- ЗАГОЛОВОК -->
+    <div class="quiz-header">
+        <h1>⚠️ Техника безопасности на рабочем месте</h1>
+        <p>Проверьте свои знания — ответьте на 15 вопросов</p>
+    </div>
+
+    <!-- ПРОГРЕСС -->
+    <div class="progress-text" id="progressText">Вопрос 1 из 15</div>
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- ВОПРОСЫ (генерируются через JS) -->
+    <div id="quizBody"></div>
+
+    <!-- РЕЗУЛЬТАТ -->
+    <div class="result-block" id="resultBlock">
+        <div class="result-icon" id="resultIcon"></div>
+        <div class="result-score" id="resultScore"></div>
+        <div class="result-message" id="resultMessage"></div>
+        <div class="result-details" id="resultDetails"></div>
+        <button class="btn btn-restart" onclick="restartQuiz()">🔄 Пройти заново</button>
+    </div>
+
+</div>
+
+<script>
+    // ===== БАЗА ВОПРОСОВ =====
+    const questions = [
+        {
+            question: "Что необходимо сделать в первую очередь при обнаружении пожара на рабочем месте?",
+            options: [
+                "Начать тушить огонь подручными средствами",
+                "Сообщить о пожаре в пожарную охрану и руководству, затем эвакуироваться",
+                "Собрать личные вещи и покинуть здание",
+                "Открыть окна для проветривания"
+            ],
+            correct: 1,
+            explanation: "При обнаружении пожара первым делом нужно сообщить о нём по телефону <strong>101</strong> или <strong>112</strong>, оповестить руководство и начать эвакуацию. Самостоятельно тушить огонь можно только на начальной стадии и если это безопасно."
+        },
+        {
+            question: "Как часто должен проводиться повторный инструктаж по охране труда для работников?",
+            options: [
+                "Ежемесячно",
+                "Не реже одного раза в 6 месяцев",
+                "Один раз в год",
+                "Один раз в 3 года"
+            ],
+            correct: 1,
+            explanation: "Согласно требованиям охраны труда, повторный инструктаж проводится <strong>не реже одного раза в 6 месяцев</strong> для всех работников."
+        },
+        {
+            question: "Что означает знак безопасности в виде жёлтого треугольника с чёрной окантовкой?",
+            options: [
+                "Запрещающий знак",
+                "Предписывающий знак",
+                "Предупреждающий знак",
+                "Указательный знак"
+            ],
+            correct: 2,
+            explanation: "Жёлтый треугольник с чёрной окантовкой — это <strong>предупреждающий знак</strong>, который информирует об опасности (например, «Осторожно! Электрическое напряжение»)."
+        },
+        {
+            question: "Разрешается ли использовать самодельные удлинители на рабочем месте?",
+            options: [
+                "Да, если они исправны",
+                "Да, с разрешения руководителя",
+                "Нет, запрещается",
+                "Да, но только в офисе"
+            ],
+            correct: 2,
+            explanation: "Использование самодельных удлинителей <strong>запрещено</strong>. Разрешается применять только сертифицированные удлинители заводского производства с исправной изоляцией и заземлением."
+        },
+        {
+            question: "Где должны быть размещены планы эвакуации при пожаре?",
+            options: [
+                "В кабинете руководителя",
+                "На каждом этаже на видных местах",
+                "Только у главного входа",
+                "В архиве документов"
+            ],
+            correct: 1,
+            explanation: "Планы эвакуации должны быть <strong>на каждом этаже на видных местах</strong>, чтобы в случае ЧС люди могли быстро найти пути выхода."
+        },
+        {
+            question: "Какой огнетушитель наиболее подходит для тушения электрооборудования под напряжением?",
+            options: [
+                "Водный",
+                "Пенный",
+                "Углекислотный (CO₂)",
+                "Песочный"
+            ],
+            correct: 2,
+            explanation: "Для тушения электроустановок под напряжением используется <strong>углекислотный огнетушитель</strong>. Вода и пена проводят электричество и могут привести к поражению током."
+        },
+        {
+            question: "Что должен сделать работник перед началом работы с новым оборудованием?",
+            options: [
+                "Начать работу, прочитав инструкцию в процессе",
+                "Пройти целевой инструктаж и ознакомиться с инструкцией по эксплуатации",
+                "Попросить коллегу показать, как работать",
+                "Ничего — если внешне всё понятно"
+            ],
+            correct: 1,
+            explanation: "Перед началом работы с новым оборудованием работник обязан <strong>пройти целевой инструктаж</strong> и изучить инструкцию по эксплуатации."
+        },
+        {
+            question: "Какова максимальная высота складирования материалов в проходах (без стеллажей)?",
+            options: [
+                "1 метр",
+                "1,5 метра",
+                "Не должно превышать 2 метра",
+                "Складирование в проходах запрещено"
+            ],
+            correct: 3,
+            explanation: "<strong>Складирование материалов в проходах и на путях эвакуации запрещено</strong> — это создаёт препятствия для свободного перемещения и эвакуации."
+        },
+        {
+            question: "Кто несёт ответственность за организацию охраны труда на предприятии?",
+            options: [
+                "Инженер по охране труда",
+                "Работники предприятия",
+                "Работодатель",
+                "Профсоюзная организация"
+            ],
+            correct: 2,
+            explanation: "Согласно Трудовому кодексу РФ, <strong>работодатель</strong> несёт полную ответственность за обеспечение безопасных условий труда на предприятии."
+        },
+        {
+            question: "Что запрещено делать при работе с электроинструментом?",
+            options: [
+                "Работать в резиновых перчатках",
+                "Работать на влажной поверхности или с мокрыми руками",
+                "Использовать инструмент с двойной изоляцией",
+                "Делать перерывы каждые 2 часа"
+            ],
+            correct: 1,
+            explanation: "<strong>Запрещается</strong> работать с электроинструментом на влажной поверхности или мокрыми руками — это резко повышает риск поражения электрическим током."
+        },
+        {
+            question: "Сколько эвакуационных выходов должно быть в помещении, где одновременно находится более 50 человек?",
+            options: [
+                "Один достаточно широкий",
+                "Не менее двух",
+                "Не менее четырёх",
+                "Зависит от площади помещения"
+            ],
+            correct: 1,
+            explanation: "В помещениях с одновременным пребыванием <strong>более 50 человек</strong> должно быть <strong>не менее двух эвакуационных выходов</strong>."
+        },
+        {
+            question: "Что необходимо сделать при получении работником травмы на производстве?",
+            options: [
+                "Продолжить работу, если травма лёгкая",
+                "Сообщить руководителю, оказать первую помощь и вызвать медработника",
+                "Самостоятельно добраться до больницы",
+                "Заполнить отчёт об инциденте и продолжать работу"
+            ],
+            correct: 1,
+            explanation: "При травме нужно <strong>немедленно сообщить руководителю</strong>, оказать первую помощь пострадавшему и вызвать медицинского работника. Даже лёгкая травма должна быть зафиксирована."
+        },
+        {
+            question: "Какой перерыв рекомендуется при работе за компьютером (по нормам охраны труда)?",
+            options: [
+                "Перерыв не требуется",
+                "5 минут каждый час",
+                "10–15 минут каждые 2 часа",
+                "30 минут каждые 4 часа"
+            ],
+            correct: 2,
+            explanation: "Рекомендуется делать перерыв <strong>10–15 минут каждые 2 часа</strong> работы за компьютером. Во время перерыва желательно выполнить упражнения для глаз и разминку."
+        },
+        {
+            question: "Что означает аббревиатура СИЗ?",
+            options: [
+                "Система информирования сотрудников",
+                "Средства индивидуальной защиты",
+                "Стандартная инструкция безопасности",
+                "Служба инспекции производства"
+            ],
+            correct: 1,
+            explanation: "<strong>СИЗ</strong> — это <strong>средства индивидуальной защиты</strong> (каски, очки, перчатки, респираторы и т.д.), которые защищают работника от вредных и опасных факторов."
+        },
+        {
+            question: "Кто имеет право проводить ремонт электрооборудования?",
+            options: [
+                "Любой работник по поручению руководителя",
+                "Только электромонтёр с соответствующей группой допуска по электробезопасности",
+                "Работник, который умеет пользоваться отвёрткой",
+                "Сотрудник IT-отдела"
+            ],
+            correct: 1,
+            explanation: "Ремонт электрооборудования может проводить <strong>только квалифицированный электромонтёр</strong>, имеющий соответствующую группу допуска по электробезопасности."
+        }
+    ];
+
+    // ===== ПЕРЕМЕННЫЕ =====
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = new Array(questions.length).fill(false);
+    let userAnswers = [];
+
+    // ===== ИНИЦИАЛИЗАЦИЯ =====
+    function initQuiz() {
+        const quizBody = document.getElementById('quizBody');
+        quizBody.innerHTML = '';
+
+        questions.forEach((q, index) => {
+            const block = document.createElement('div');
+            block.classList.add('question-block');
+            if (index === 0) block.classList.add('active');
+            block.id = `question-${index}`;
+
+            let optionsHTML = '';
+            q.options.forEach((opt, optIndex) => {
+                optionsHTML += `
+                    <li class="option-item" onclick="selectOption(${index}, ${optIndex}, this)">
+                        ${opt}
+                    </li>
+                `;
+            });
+
+            block.innerHTML = `
+                <div class="question-title">${index + 1}. ${q.question}</div>
+                <ul class="options-list" id="options-${index}">
+                    ${optionsHTML}
+                </ul>
+                <div class="explanation" id="explanation-${index}">
+                    <strong>📖 Пояснение:</strong> ${q.explanation}
+                </div>
+                <div class="btn-container">
+                    <button class="btn btn-next" id="btn-${index}" disabled onclick="nextQuestion(${index})">
+                        ${index < questions.length - 1 ? 'Далее →' : 'Результат 📊'}
+                    </button>
+                </div>
+            `;
+
+            quizBody.appendChild(block);
+        });
+
+        updateProgress();
+    }
+
+    // ===== ВЫБОР ОТВЕТА =====
+    function selectOption(qIndex, optIndex, element) {
+        if (answered[qIndex]) return;
+        answered[qIndex] = true;
+        userAnswers[qIndex] = optIndex;
+
+        const options = document.querySelectorAll(`#options-${qIndex} .option-item`);
+        const correctIndex = questions[qIndex].correct;
+
+        // Отключаем все варианты
+        options.forEach(opt => opt.classList.add('disabled'));
+
+        // Подсвечиваем правильный и неправильный
+        if (optIndex === correctIndex) {
+            element.classList.add('correct');
+            element.classList.add('selected');
+            score++;
+        } else {
+            element.classList.add('wrong');
+            options[correctIndex].classList.add('correct');
+        }
+
+        // Показываем пояснение
+        document.getElementById(`explanation-${qIndex}`).classList.add('active');
+
+        // Активируем кнопку
+        document.getElementById(`btn-${qIndex}`).disabled = false;
+    }
+
+    // ===== СЛЕДУЮЩИЙ ВОПРОС =====
+    function nextQuestion(currentIndex) {
+        const currentBlock = document.getElementById(`question-${currentIndex}`);
+        currentBlock.classList.remove('active');
+
+        if (currentIndex < questions.length - 1) {
+            currentQuestion = currentIndex + 1;
+            document.getElementById(`question-${currentQuestion}`).classList.add('active');
+            updateProgress();
+        } else {
+            showResult();
+        }
+    }
+
+    // ===== ОБНОВЛЕНИЕ ПРОГРЕССА =====
+    function updateProgress() {
+        const progress = ((currentQuestion) / questions.length) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+        document.getElementById('progressText').textContent =
+            `Вопрос ${currentQuestion + 1} из ${questions.length}`;
+    }
+
+    // ===== ПОКАЗАТЬ РЕЗУЛЬТАТ =====
+    function showResult() {
+        document.getElementById('progressBar').style.width = '100%';
+        document.getElementById('progressText').textContent = 'Тест завершён!';
+
+        const percent = Math.round((score / questions.length) * 100);
+        let icon, message, details;
+
+        if (percent >= 90) {
+            icon = '🏆';
+            message = 'Отличный результат!';
+            details = 'Вы превосходно знаете правила техники безопасности. Так держать!';
+        } else if (percent >= 70) {
+            icon = '✅';
+            message = 'Хороший результат!';
+            details = 'Вы хорошо разбираетесь в технике безопасности, но есть над чем поработать.';
+        } else if (percent >= 50) {
+            icon = '⚠️';
+            message = 'Удовлетворительно';
+            details = 'Рекомендуем повторно изучить правила охраны труда и пройти тест снова.';
+        } else {
+            icon = '❌';
+            message = 'Неудовлетворительно';
+            details = 'Необходимо обязательно пройти обучение по технике безопасности!';
+        }
+
+        document.getElementById('resultIcon').textContent = icon;
+        document.getElementById('resultScore').textContent = `${score} / ${questions.length} (${percent}%)`;
+        document.getElementById('resultMessage').textContent = message;
+        document.getElementById('resultDetails').textContent = details;
+
+        document.getElementById('quizBody').style.display = 'none';
+        document.getElementById('resultBlock').classList.add('active');
+    }
+
+    // ===== ПЕРЕЗАПУСК =====
+    function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        answered = new Array(questions.length).fill(false);
+        userAnswers = [];
+
+        document.getElementById('quizBody').style.display = 'block';
+        document.getElementById('resultBlock').classList.remove('active');
+
+        initQuiz();
+    }
+
+    // ===== ЗАПУСК =====
+    initQuiz();
+</script>
+
+</body>
+</html>
